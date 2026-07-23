@@ -27,18 +27,33 @@ public class LevelController : MonoBehaviour {
     public float planetsSpeed;
     List<GameObject> planetsList = new List<GameObject>();
 
-    Camera mainCamera;   
+    [Tooltip("Optional boss to spawn once, after bossSpawnDelay. Leave empty for levels with no boss.")]
+    public GameObject boss;
+    [Tooltip("Delay in seconds, from level start, before the boss spawns")]
+    public float bossSpawnDelay;
+
+    Camera mainCamera;
 
     private void Start()
     {
         mainCamera = Camera.main;
         //for each element in 'enemyWaves' array creating coroutine which generates the wave
-        for (int i = 0; i<enemyWaves.Length; i++) 
+        for (int i = 0; i<enemyWaves.Length; i++)
         {
             StartCoroutine(CreateEnemyWave(enemyWaves[i].timeToStart, enemyWaves[i].wave));
         }
         StartCoroutine(PowerupBonusCreation());
         StartCoroutine(PlanetsCreation());
+        if (boss != null)
+            StartCoroutine(CreateBoss());
+    }
+
+    //spawns the level's boss (if configured) once, after bossSpawnDelay
+    IEnumerator CreateBoss()
+    {
+        yield return new WaitForSeconds(bossSpawnDelay);
+        if (Player.instance != null)
+            Instantiate(boss);
     }
     
     //Create a new wave after a delay
