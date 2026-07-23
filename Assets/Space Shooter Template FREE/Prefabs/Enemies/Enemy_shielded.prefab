@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 58425179734721642}
   - component: {fileID: 114640587493707362}
   - component: {fileID: 50267448758737772}
-  - component: {fileID: 3372157227288429120}
+  - component: {fileID: 6234835880772691966}
   m_Layer: 0
   m_Name: Enemy_shielded
   m_TagString: Enemy
@@ -198,7 +198,7 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &3372157227288429120
+--- !u!114 &6234835880772691966
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
