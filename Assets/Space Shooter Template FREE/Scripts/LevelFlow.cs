@@ -20,7 +20,7 @@ public class LevelFlow : MonoBehaviour
         GetComponent<LevelCompletionTracker>().OnLevelComplete.AddListener(HandleLevelComplete);
     }
 
-    void HandleLevelComplete()
+    public void HandleLevelComplete()
     {
         if (!string.IsNullOrEmpty(nextSceneName))
             Invoke(nameof(LoadNextScene), delayBeforeLoad);

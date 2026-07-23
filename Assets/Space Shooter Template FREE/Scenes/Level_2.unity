@@ -219,7 +219,7 @@ PrefabInstance:
         type: 3}
       propertyPath: boss
       value: 
-      objectReference: {fileID: 5454600283601524727, guid: 934f3de1704c476489d26e06088a05d1,
+      objectReference: {fileID: 3693278491385762036, guid: 934f3de1704c476489d26e06088a05d1,
         type: 3}
     - target: {fileID: 114004447756405556, guid: 01cf4a33fc66cde4abc060ccfeadeb5a,
         type: 3}
@@ -245,7 +245,7 @@ PrefabInstance:
         type: 3}
       propertyPath: enemyWaves.Array.data[18].wave
       value: 
-      objectReference: {fileID: 1947974370059188, guid: 063ad3e3ab10c7645aabaae627f1bba5,
+      objectReference: {fileID: 1947974370059188, guid: 458bd98b0c6736c40a441957ef07190f,
         type: 3}
     - target: {fileID: 114004447756405556, guid: 01cf4a33fc66cde4abc060ccfeadeb5a,
         type: 3}
@@ -394,6 +394,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1020588478637826, guid: 5a213a4dde83c404f8856922c5fc08ff, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4203747073831066, guid: 5a213a4dde83c404f8856922c5fc08ff, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -426,10 +430,25 @@ PrefabInstance:
       propertyPath: m_LocalRotation.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 199429801109370770, guid: 5a213a4dde83c404f8856922c5fc08ff,
+        type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 199707794767241082, guid: 5a213a4dde83c404f8856922c5fc08ff,
         type: 3}
       propertyPath: m_Materials.Array.size
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 212162588336878546, guid: 5a213a4dde83c404f8856922c5fc08ff,
+        type: 3}
+      propertyPath: m_SortingOrder
+      value: -2
+      objectReference: {fileID: 0}
+    - target: {fileID: 212835588731536264, guid: 5a213a4dde83c404f8856922c5fc08ff,
+        type: 3}
+      propertyPath: m_SortingOrder
+      value: -2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -440,6 +459,6 @@ PrefabInstance:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
+  - {fileID: 1260136712}
   - {fileID: 974050356}
   - {fileID: 271878659}
-  - {fileID: 1260136712}
