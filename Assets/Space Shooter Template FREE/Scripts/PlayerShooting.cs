@@ -37,6 +37,13 @@ public class PlayerShooting : MonoBehaviour {
         if (instance == null)
             instance = this;
     }
+
+    private void OnDestroy()
+    {
+        if (instance == this)
+            instance = null; //without this, a stale reference from a previous scene blocks the next level's PlayerShooting from ever registering
+    }
+
     private void Start()
     {
         //receiving shooting visual effects components

@@ -15,15 +15,21 @@ public class Player : MonoBehaviour
 
     private void Awake()
     {
-        if (instance == null) 
+        if (instance == null)
             instance = this;
     }
 
+    private void OnDestroy()
+    {
+        if (instance == this)
+            instance = null; //without this, other scripts calling Player.instance after death would hit a destroyed object
+    }
+
     //method for damage proceccing by 'Player'
-    public void GetDamage(int damage)   
+    public void GetDamage(int damage)
     {
         Destruction();
-    }    
+    }
 
     //'Player's' destruction procedure
     void Destruction()

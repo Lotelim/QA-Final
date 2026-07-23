@@ -29,6 +29,12 @@ public class PlayerMoving : MonoBehaviour {
             instance = this;
     }
 
+    private void OnDestroy()
+    {
+        if (instance == this)
+            instance = null; //without this, a stale reference from a previous scene blocks the next level's PlayerMoving from ever registering
+    }
+
     private void Start()
     {
         mainCamera = Camera.main;

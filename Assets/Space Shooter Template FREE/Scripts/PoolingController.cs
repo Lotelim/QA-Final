@@ -28,6 +28,12 @@ public class PoolingController : MonoBehaviour {
             instance = this;
     }
 
+    private void OnDestroy()
+    {
+        if (instance == this)
+            instance = null; //without this, a stale reference from a previous scene blocks the next level's PoolingController from ever registering
+    }
+
     private void Start()
     {
         CreateNewList();        //Create the new list of 'pooling' objects
