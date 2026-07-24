@@ -17,7 +17,7 @@ Testing covers: player movement and shooting, enemy behavior (including the new 
 ### 1.3 References
 
 - `Assets/Space Shooter Template FREE/Scripts/*.cs` — system under test
-- `Assets/Tests/EditMode`, `Assets/Tests/PlayMode` — automated test suite (79 tests at time of writing)
+- `Assets/Tests/EditMode`, `Assets/Tests/PlayMode` — automated test suite (91 tests at time of writing)
 - `Docs/STD.md` — detailed test case specification (companion to this plan)
 - `Docs/BUG_TRACKING.md` — defects found during this test cycle
 - `Docs/CROSS_PLATFORM_REPORT.md`, `Docs/ACCESSIBILITY_REPORT.md` — specialized test reports
@@ -61,7 +61,7 @@ Unity Test Framework (NUnit-based), split into:
 - **EditMode tests**: pure logic with no MonoBehaviour lifecycle dependency (spline math, Shield's damage-absorption math, Boss direction-selection math).
 - **PlayMode tests**: anything depending on Awake/Start/Update, coroutines, physics triggers, or scene loading — the majority of the suite, since most of this codebase is MonoBehaviour-driven.
 
-Both suites run headlessly via `Unity.exe -batchmode -runTests` locally and in CI (game-ci/unity-test-runner). At the time of writing: 34 EditMode tests and 45 PlayMode tests, all passing.
+Both suites run headlessly via `Unity.exe -batchmode -runTests` locally and in CI (game-ci/unity-test-runner). At the time of writing: 34 EditMode tests and 57 PlayMode tests, all passing.
 
 ### 5.2 Manual testing
 

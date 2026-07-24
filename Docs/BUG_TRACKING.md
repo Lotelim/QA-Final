@@ -84,6 +84,65 @@ prefab authoring and my own test code.
 **Fix:** the padded array is now computed once in `SetPath()` and cached
 (`SplineUtility.PadForCatmullRom`), reused every frame.
 
+### 13. Level never actually transitioned from Level_1 to Level_2
+**Labels:** `bug`, `severity:critical` · **Status:** Fixed & closed
+
+The real bug behind "doesn't move from level 1 to 2", found only once you
+actually played it: `LevelCompletionTracker.expectedDefeats` (180 for
+Level_1) assumed every spawned enemy would eventually be counted, but
+`Enemy.OnDestroyed` only fired from the manual `Destruction()` method - i.e.
+only enemies the player actually **shot down**. Most enemies in a real
+playthrough fly past and self-destruct naturally via `FollowThePath`
+reaching the end of its route, which never touched `Destruction()` at all.
+Reaching 180 *kills* specifically is essentially impossible in normal play,
+so the level's completion count could never reach its target and the scene
+transition never fired.
+**Fix:** moved the `OnDestroyed` invocation into Unity's own `OnDestroy()`
+lifecycle callback on `Enemy`, which fires for *any* destruction path (killed
+or naturally despawned), not just the lethal-damage one.
+**Regression test:** `LevelCompletionTrackerTests.OnLevelComplete_CountsEnemiesThatDespawnNaturally_NotJustKills`
+destroys an enemy directly (bypassing `GetDamage`/`Destruction` entirely) and
+asserts it still counts.
+
+### 14. Powerup spawn threw a NullReferenceException after the player died
+**Labels:** `bug`, `severity:high` · **Status:** Fixed & closed
+
+`LevelController.PowerupBonusCreation()` referenced
+`PlayerMoving.instance.borders.minX/maxX` directly, with no null check. Once
+the player dies, `PlayerMoving.instance` is correctly cleared (bug #2's fix),
+so the very next powerup timer tick threw.
+**Fix:** the coroutine now skips a cycle (`continue`) if `PlayerMoving.instance`
+is null instead of dereferencing it.
+**Regression test:** `LevelControllerTests.PowerupBonusCreation_AfterThePlayerIsGone_DoesNotErrorOut`.
+
+### 15. Boss movement looked robotic ("enemies move too weird")
+**Labels:** `bug`, `severity:low` · **Status:** Fixed & closed
+
+`BossMovement` snapped instantly to a brand-new direction's full-speed
+vector the moment `CurrentDirection` changed, every 1-3 seconds - jarring
+next to the smoothly path-following regular enemies.
+**Fix:** velocity now eases toward the target direction via `Vector2.MoveTowards`
+(new `turnAcceleration` field) instead of snapping to it.
+**Regression test:** `BossIntegrationTests.BossMovement_RampsUpVelocityGradually_InsteadOfSnappingToFullSpeed`.
+
+---
+
+## Features added in response to first playtest feedback
+
+Once the game was actually playable (Level_1/Level_2 + Shield/Boss all
+wired up), direct playtesting surfaced the three bugs above plus requests
+for a `GameHUD` (wave-number text, a boss health bar shown only while a
+boss is alive, and win/lose overlays with a Restart button) - all delivered
+test-first, see `GameHUDTests.cs`. One implementation note worth recording
+here rather than as a "bug", since it was caught before ever shipping:
+`GameHUD` must subscribe to `LevelController`'s wave/boss events in
+**`Awake()`**, not `Start()` - a zero-delay first wave fires its event
+synchronously from inside `LevelController.Start()` itself, and Unity does
+not guarantee `Start()` ordering across different GameObjects the way it
+guarantees all `Awake()` calls finish before any `Start()` begins. (Script
+Execution Order was tried first and does **not** help here - it only
+orders the Update-family callbacks, not Awake/Start.)
+
 ---
 
 ## Open backlog (not fixed - flagged for a deliberate scope decision)

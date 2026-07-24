@@ -28,11 +28,11 @@ This document lists every automated test class in the suite (mapped to the featu
 | ShieldTests | 6 | Shield.AbsorbDamage: partial absorption, exact depletion, overflow-through, already-depleted pass-through, zero/negative damage no-ops |
 | BossMovementPatternTests | 16 | BossMovementPattern.PickNextDirection/ToVector: every roll-to-direction boundary (5-way split), the roll=1.0 edge case, and every direction's unit vector |
 
-### 3.2 PlayMode (45 tests — MonoBehaviour lifecycle, physics, coroutines, scenes)
+### 3.2 PlayMode (57 tests — MonoBehaviour lifecycle, physics, coroutines, scenes)
 
 | Test Class | Cases | Covers |
 |---|---|---|
-| PlayerTests | 4 | Awake sets the static instance; any damage amount destroys the player; OnDestroy clears the instance; a second Player correctly takes over after the first is destroyed (the level-transition scenario) |
+| PlayerTests | 5 | Awake sets the static instance; any damage amount destroys the player; OnDestroy clears the instance; a second Player correctly takes over after the first is destroyed (the level-transition scenario); OnPlayerDied fires when the player is destroyed |
 | PlayerMovingTests | 2 | Border computation from viewport + offsets; position clamping when pushed out of bounds |
 | PlayerShootingTests | 4 | Projectile fan-out count at each weapon power level (1/2/3/4 → 1/2/3/5 shots) |
 | BonusTests | 2 | Weapon power increments on pickup (and is capped at max); bonus is destroyed on pickup via real 2D trigger collision |
@@ -42,12 +42,13 @@ This document lists every automated test class in the suite (mapped to the featu
 | RepeatingBackgroundTests | 2 | Repositions upward by 2x verticalSize when below threshold; does not reposition otherwise |
 | VisualEffectTests | 1 | Destroys the GameObject once destructionTime elapses |
 | WaveTests | 2 | Spawns the configured enemy count over time with the player present; stops spawning once the player is gone (regression) |
-| LevelControllerTests | 3 | Zero-delay wave spawns immediately with the player present; does not spawn with no player; delayed wave waits before spawning |
-| LevelControllerBossTests | 3 | No boss configured spawns nothing; boss spawns after its delay with the player present; does not spawn with no player at spawn time |
+| LevelControllerTests | 5 | Zero-delay wave spawns immediately with the player present; does not spawn with no player; delayed wave waits before spawning; powerup spawn no longer errors after the player is gone (regression); OnWaveStarted fires with the correct 1-based wave number as each wave spawns |
+| LevelControllerBossTests | 4 | No boss configured spawns nothing; boss spawns after its delay with the player present; does not spawn with no player at spawn time; OnBossSpawned fires with the spawned instance's Enemy component |
 | ShieldIntegrationTests | 3 | Enemy+Shield: shield protects health until depleted, then overflow damages health; no-shield enemy behaves exactly as before; lethal damage through a depleted shield destroys the enemy |
-| BossIntegrationTests | 3 | BossMovement stays within configured screen bounds across many frames; Boss (huge HP) survives a normal hit; Boss raises OnDestroyed and is removed when truly defeated |
-| LevelCompletionTrackerTests | 4 | OnLevelComplete fires only once all registered enemies are defeated; does not fire again afterward; duplicate registration doesn't double-count; Enemy auto-registers with the active tracker on Start |
+| BossIntegrationTests | 4 | BossMovement stays within configured screen bounds across many frames; Boss (huge HP) survives a normal hit; Boss raises OnDestroyed and is removed when truly defeated; BossMovement ramps velocity up gradually instead of snapping to full speed (regression for "enemies move too weird") |
+| LevelCompletionTrackerTests | 5 | OnLevelComplete fires only once all registered enemies are defeated; does not fire again afterward; duplicate registration doesn't double-count; Enemy auto-registers with the active tracker on Start; counts enemies that despawn naturally, not just kills (regression for the stuck Level 1→2 transition) |
 | LevelSceneLoadTests | 2 | Level_1 loads with completion tracking wired to Level_2; Level_2 loads with a shielded wave and a huge-HP boss present |
+| GameHUDTests | 6 | Boss bar/win/lose screens hidden by default; wave text updates even for a zero-delay first wave; boss health bar shows/tracks damage/hides on defeat; lose screen shows on player death; win screen shows only on the last level's completion |
 
 ## 4. Manual Test Cases
 
