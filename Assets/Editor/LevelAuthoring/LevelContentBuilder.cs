@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
+using UnityEditor.Events;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// One-off content-authoring tool: builds Level_1 (a straight adaptation of Demo_Scene, wired
@@ -144,6 +146,7 @@ public static class LevelContentBuilder
 
         int expectedDefeats = ComputeExpectedDefeats(levelController);
         ConfigureLevelFlow(gameController, expectedDefeats, nextSceneName: "Level_2");
+        BuildHud(scene);
 
         EditorSceneManager.MarkSceneDirty(scene);
         EditorSceneManager.SaveScene(scene);
@@ -177,6 +180,7 @@ public static class LevelContentBuilder
 
         int expectedDefeats = ComputeExpectedDefeats(levelController) + 1; // +1 for the boss
         ConfigureLevelFlow(gameController, expectedDefeats, nextSceneName: "");
+        BuildHud(scene);
 
         EditorUtility.SetDirty(levelController);
         EditorSceneManager.MarkSceneDirty(scene);
@@ -225,5 +229,119 @@ public static class LevelContentBuilder
     {
         if (!scenes.Exists(s => s.path == path))
             scenes.Add(new EditorBuildSettingsScene(path, true));
+    }
+
+    // ---- HUD ----
+
+    static void BuildHud(UnityEngine.SceneManagement.Scene scene)
+    {
+        // Safe to re-run: remove any previously-built HUD first rather than duplicating one.
+        foreach (GameObject root in scene.GetRootGameObjects())
+            if (root.name == "HUD Canvas")
+                Object.DestroyImmediate(root);
+
+        Font defaultFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        if (defaultFont == null)
+            defaultFont = Resources.GetBuiltinResource<Font>("Arial.ttf");
+
+        var canvasGO = new GameObject("HUD Canvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+        var canvas = canvasGO.GetComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        var scaler = canvasGO.GetComponent<CanvasScaler>();
+        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        scaler.referenceResolution = new Vector2(1920, 1080);
+
+        var hud = canvasGO.AddComponent<GameHUD>();
+        hud.restartSceneName = "Level_1";
+
+        GameObject waveTextGO = CreateUIText("WaveText", canvasGO.transform, defaultFont, "Wave 1", 36, TextAnchor.UpperCenter, Color.white);
+        SetAnchoredRect(waveTextGO.GetComponent<RectTransform>(), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0, -40), new Vector2(400, 60));
+        hud.waveText = waveTextGO.GetComponent<Text>();
+
+        var barRoot = new GameObject("BossHealthBarRoot", typeof(RectTransform));
+        barRoot.transform.SetParent(canvasGO.transform, false);
+        SetAnchoredRect(barRoot.GetComponent<RectTransform>(), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0, -110), new Vector2(800, 40));
+        hud.bossHealthBarRoot = barRoot;
+
+        GameObject barBg = CreateUIImage("Background", barRoot.transform, new Color(0.15f, 0.15f, 0.15f, 0.85f));
+        FillParent(barBg.GetComponent<RectTransform>());
+
+        GameObject barFill = CreateUIImage("Fill", barRoot.transform, new Color(0.85f, 0.15f, 0.15f, 1f));
+        FillParent(barFill.GetComponent<RectTransform>());
+        Image fillImage = barFill.GetComponent<Image>();
+        fillImage.type = Image.Type.Filled;
+        fillImage.fillMethod = Image.FillMethod.Horizontal;
+        fillImage.fillOrigin = (int)Image.OriginHorizontal.Left;
+        fillImage.fillAmount = 1f;
+        hud.bossHealthFill = fillImage;
+
+        hud.winScreenRoot = CreateOverlayScreen("WinScreenRoot", canvasGO.transform, defaultFont, "YOU WIN", hud);
+        hud.loseScreenRoot = CreateOverlayScreen("LoseScreenRoot", canvasGO.transform, defaultFont, "GAME OVER", hud);
+    }
+
+    static GameObject CreateUIText(string name, Transform parent, Font font, string text, int fontSize, TextAnchor alignment, Color color)
+    {
+        var go = new GameObject(name, typeof(RectTransform), typeof(Text));
+        go.transform.SetParent(parent, false);
+        var t = go.GetComponent<Text>();
+        t.font = font;
+        t.text = text;
+        t.fontSize = fontSize;
+        t.alignment = alignment;
+        t.color = color;
+        t.horizontalOverflow = HorizontalWrapMode.Overflow;
+        t.verticalOverflow = VerticalWrapMode.Overflow;
+        return go;
+    }
+
+    static GameObject CreateUIImage(string name, Transform parent, Color color)
+    {
+        var go = new GameObject(name, typeof(RectTransform), typeof(Image));
+        go.transform.SetParent(parent, false);
+        go.GetComponent<Image>().color = color;
+        return go;
+    }
+
+    static void SetAnchoredRect(RectTransform rt, Vector2 anchorMin, Vector2 anchorMax, Vector2 anchoredPosition, Vector2 sizeDelta)
+    {
+        rt.anchorMin = anchorMin;
+        rt.anchorMax = anchorMax;
+        rt.pivot = new Vector2(0.5f, 0.5f);
+        rt.anchoredPosition = anchoredPosition;
+        rt.sizeDelta = sizeDelta;
+    }
+
+    static void FillParent(RectTransform rt)
+    {
+        rt.anchorMin = Vector2.zero;
+        rt.anchorMax = Vector2.one;
+        rt.offsetMin = Vector2.zero;
+        rt.offsetMax = Vector2.zero;
+    }
+
+    static GameObject CreateOverlayScreen(string name, Transform parent, Font font, string message, GameHUD hud)
+    {
+        var root = new GameObject(name, typeof(RectTransform));
+        root.transform.SetParent(parent, false);
+        FillParent(root.GetComponent<RectTransform>());
+
+        GameObject bg = CreateUIImage("Background", root.transform, new Color(0, 0, 0, 0.75f));
+        FillParent(bg.GetComponent<RectTransform>());
+
+        GameObject messageGO = CreateUIText("Message", root.transform, font, message, 72, TextAnchor.MiddleCenter, Color.white);
+        SetAnchoredRect(messageGO.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, 60), new Vector2(800, 150));
+
+        var buttonGO = new GameObject("RestartButton", typeof(RectTransform), typeof(Image), typeof(Button));
+        buttonGO.transform.SetParent(root.transform, false);
+        SetAnchoredRect(buttonGO.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0, -60), new Vector2(240, 70));
+        buttonGO.GetComponent<Image>().color = new Color(0.2f, 0.5f, 0.9f, 1f);
+        Button button = buttonGO.GetComponent<Button>();
+
+        GameObject buttonTextGO = CreateUIText("Text", buttonGO.transform, font, "Restart", 32, TextAnchor.MiddleCenter, Color.white);
+        FillParent(buttonTextGO.GetComponent<RectTransform>());
+
+        UnityEventTools.AddPersistentListener(button.onClick, hud.RestartFromLevel1);
+
+        return root;
     }
 }

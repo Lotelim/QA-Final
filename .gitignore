@@ -67,3 +67,7 @@ crashlytics-build.properties
 /artifacts/
 *.trx
 *-results.xml
+
+# Leftover temp scene from a Unity Test Framework run that got killed/crashed mid-test
+/Assets/InitTestScene*.unity
+/Assets/InitTestScene*.unity.meta

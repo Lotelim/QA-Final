@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 58425179734721642}
   - component: {fileID: 114640587493707362}
   - component: {fileID: 50267448758737772}
-  - component: {fileID: 2440326185010356876}
+  - component: {fileID: 5147974495113332642}
   m_Layer: 0
   m_Name: Enemy_shielded
   m_TagString: Enemy
@@ -115,6 +115,7 @@ MonoBehaviour:
   shotChance: 10
   shotTimeMin: 1
   shotTimeMax: 3
+  maxHealth: 0
 --- !u!58 &58425179734721642
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -198,7 +199,7 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &2440326185010356876
+--- !u!114 &5147974495113332642
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
