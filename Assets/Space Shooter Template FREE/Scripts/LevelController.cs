@@ -32,6 +32,12 @@ public class LevelController : MonoBehaviour {
     [Tooltip("Delay in seconds, from level start, before the boss spawns")]
     public float bossSpawnDelay;
 
+    /// <summary>Raised with the 1-based wave number each time a wave actually spawns (e.g. for a "Wave N" HUD).</summary>
+    public event System.Action<int> OnWaveStarted;
+
+    /// <summary>Raised with the spawned boss's Enemy component once it's actually instantiated (e.g. for a boss health bar).</summary>
+    public event System.Action<Enemy> OnBossSpawned;
+
     Camera mainCamera;
 
     private void Start()
@@ -40,7 +46,7 @@ public class LevelController : MonoBehaviour {
         //for each element in 'enemyWaves' array creating coroutine which generates the wave
         for (int i = 0; i<enemyWaves.Length; i++)
         {
-            StartCoroutine(CreateEnemyWave(enemyWaves[i].timeToStart, enemyWaves[i].wave));
+            StartCoroutine(CreateEnemyWave(enemyWaves[i].timeToStart, enemyWaves[i].wave, i + 1));
         }
         StartCoroutine(PowerupBonusCreation());
         StartCoroutine(PlanetsCreation());
@@ -53,30 +59,38 @@ public class LevelController : MonoBehaviour {
     {
         yield return new WaitForSeconds(bossSpawnDelay);
         if (Player.instance != null)
-            Instantiate(boss);
+        {
+            GameObject bossInstance = Instantiate(boss);
+            OnBossSpawned?.Invoke(bossInstance.GetComponent<Enemy>());
+        }
     }
-    
+
     //Create a new wave after a delay
-    IEnumerator CreateEnemyWave(float delay, GameObject Wave) 
+    IEnumerator CreateEnemyWave(float delay, GameObject Wave, int waveNumber)
     {
         if (delay != 0)
             yield return new WaitForSeconds(delay);
         if (Player.instance != null)
+        {
             Instantiate(Wave);
+            OnWaveStarted?.Invoke(waveNumber);
+        }
     }
 
-    //endless coroutine generating 'levelUp' bonuses. 
-    IEnumerator PowerupBonusCreation() 
+    //endless coroutine generating 'levelUp' bonuses.
+    IEnumerator PowerupBonusCreation()
     {
-        while (true) 
+        while (true)
         {
             yield return new WaitForSeconds(timeForNewPowerup);
+            if (PlayerMoving.instance == null)
+                continue; //player is gone; nothing to bound the spawn position against, skip this cycle
             Instantiate(
                 powerUp,
-                //Set the position for the new bonus: for X-axis - random position between the borders of 'Player's' movement; for Y-axis - right above the upper screen border 
+                //Set the position for the new bonus: for X-axis - random position between the borders of 'Player's' movement; for Y-axis - right above the upper screen border
                 new Vector2(
-                    Random.Range(PlayerMoving.instance.borders.minX, PlayerMoving.instance.borders.maxX), 
-                    mainCamera.ViewportToWorldPoint(Vector2.up).y + powerUp.GetComponent<Renderer>().bounds.size.y / 2), 
+                    Random.Range(PlayerMoving.instance.borders.minX, PlayerMoving.instance.borders.maxX),
+                    mainCamera.ViewportToWorldPoint(Vector2.up).y + powerUp.GetComponent<Renderer>().bounds.size.y / 2),
                 Quaternion.identity
                 );
         }

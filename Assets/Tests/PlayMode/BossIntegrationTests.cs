@@ -71,6 +71,28 @@ public class BossIntegrationTests
     }
 
     [UnityTest]
+    public IEnumerator BossMovement_RampsUpVelocityGradually_InsteadOfSnappingToFullSpeed()
+    {
+        // Regression test for "enemies move too weird": BossMovement used to jump straight to
+        // the new direction's full-speed vector the instant CurrentDirection changed, which
+        // looked robotic next to the smoothly path-following regular enemies. It should now
+        // ease its velocity toward the target instead.
+        CreateMainCamera();
+        GameObject bossGO = CreatePlaceholder("TestBoss3");
+        var movement = bossGO.AddComponent<BossMovement>();
+        movement.speed = 10f;
+        movement.minDirectionHoldTime = 10f;
+        movement.maxDirectionHoldTime = 10f;
+        movement.turnAcceleration = 1f; // slow ramp so the first tick is clearly still accelerating
+
+        yield return null; // Start(): picks a direction, velocity starts at zero
+        yield return null; // one Update() tick of ramping
+
+        Assert.Less(movement.CurrentSpeed, movement.speed,
+            "velocity should still be ramping up, not already at full speed, right after picking a new direction");
+    }
+
+    [UnityTest]
     public IEnumerator Boss_HasHugeHealth_SurvivesANormalHit()
     {
         GameObject bossGO = CreatePlaceholder("TestBossEntity");

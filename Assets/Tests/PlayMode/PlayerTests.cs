@@ -84,4 +84,19 @@ public class PlayerTests
 
         Assert.AreSame(levelTwoPlayer, Player.instance, "the new level's Player should become the active instance");
     }
+
+    [UnityTest]
+    public IEnumerator OnPlayerDied_FiresWhenThePlayerIsDestroyed()
+    {
+        Player player = CreatePlayer();
+        yield return null;
+
+        bool died = false;
+        player.OnPlayerDied += () => died = true;
+
+        player.GetDamage(1);
+        yield return null; // Destroy() (and thus OnDestroy) is deferred to end-of-frame
+
+        Assert.IsTrue(died);
+    }
 }

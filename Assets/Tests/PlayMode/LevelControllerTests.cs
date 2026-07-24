@@ -92,4 +92,55 @@ public class LevelControllerTests
         yield return new WaitForSeconds(0.3f);
         Assert.AreEqual(1, CountClones("TestWavePrefab(Clone)"));
     }
+
+    [UnityTest]
+    public IEnumerator PowerupBonusCreation_AfterThePlayerIsGone_DoesNotErrorOut()
+    {
+        // Regression test: PowerupBonusCreation used PlayerMoving.instance.borders directly with
+        // no null check. Once the player dies, PlayerMoving.instance is cleared (our OnDestroy
+        // fix), and the next powerup tick threw a NullReferenceException. Unity Test Framework
+        // fails a test automatically on any unexpected logged error, so this test passes
+        // precisely by not logging one.
+        TestSceneHelpers.CreateMainCamera(spawned);
+        GameObject powerUpPrefab = TestSceneHelpers.CreatePlaceholder(spawned, "TestPowerUp");
+        powerUpPrefab.AddComponent<SpriteRenderer>(); // Instantiate(...).GetComponent<Renderer>() needs one present
+
+        GameObject go = TestSceneHelpers.CreatePlaceholder(spawned, "TestLevelControllerNoPlayer");
+        var controller = go.AddComponent<LevelController>();
+        controller.enemyWaves = new EnemyWaves[0];
+        controller.powerUp = powerUpPrefab;
+        controller.timeForNewPowerup = 0.05f;
+        controller.planets = new GameObject[0];
+        controller.timeBetweenPlanets = 9999f;
+        // Deliberately no Player/PlayerMoving created - simulates the player already being dead.
+
+        yield return new WaitForSeconds(0.15f); // let the powerup timer tick at least once
+    }
+
+    [UnityTest]
+    public IEnumerator OnWaveStarted_FiresWithOneBasedWaveNumber_AsEachWaveSpawns()
+    {
+        CreatePlayer();
+        GameObject wavePrefabA = TestSceneHelpers.CreatePlaceholder(spawned, "TestWavePrefabA");
+        GameObject wavePrefabB = TestSceneHelpers.CreatePlaceholder(spawned, "TestWavePrefabB");
+
+        GameObject go = TestSceneHelpers.CreatePlaceholder(spawned, "TestLevelControllerWaveEvents");
+        var controller = go.AddComponent<LevelController>();
+        controller.enemyWaves = new[]
+        {
+            new EnemyWaves { timeToStart = 0f, wave = wavePrefabA },
+            new EnemyWaves { timeToStart = 0.1f, wave = wavePrefabB },
+        };
+        controller.timeForNewPowerup = 9999f;
+        controller.planets = new GameObject[0];
+        controller.timeBetweenPlanets = 9999f;
+
+        var fired = new List<int>();
+        controller.OnWaveStarted += n => fired.Add(n);
+
+        yield return null; // wave 1 (delay 0) spawns immediately
+        yield return new WaitForSeconds(0.15f); // wave 2 (delay 0.1) spawns
+
+        CollectionAssert.AreEqual(new[] { 1, 2 }, fired);
+    }
 }

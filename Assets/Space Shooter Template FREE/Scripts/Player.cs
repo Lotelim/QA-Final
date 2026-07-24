@@ -11,7 +11,10 @@ public class Player : MonoBehaviour
 {
     public GameObject destructionFX;
 
-    public static Player instance; 
+    public static Player instance;
+
+    /// <summary>Raised when the Player's GameObject is actually destroyed (e.g. for a "GAME OVER" screen).</summary>
+    public event System.Action OnPlayerDied;
 
     private void Awake()
     {
@@ -23,6 +26,7 @@ public class Player : MonoBehaviour
     {
         if (instance == this)
             instance = null; //without this, other scripts calling Player.instance after death would hit a destroyed object
+        OnPlayerDied?.Invoke();
     }
 
     //method for damage proceccing by 'Player'

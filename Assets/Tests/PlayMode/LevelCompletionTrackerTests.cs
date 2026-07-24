@@ -127,4 +127,26 @@ public class LevelCompletionTrackerTests
 
         Assert.AreEqual(1, fireCount);
     }
+
+    [UnityTest]
+    public IEnumerator OnLevelComplete_CountsEnemiesThatDespawnNaturally_NotJustKills()
+    {
+        // Regression test for the real "stuck between Level 1 and Level 2" bug: most enemies
+        // in an actual playthrough fly past and are never shot down - they just reach the end
+        // of their path and self-destruct (as FollowThePath does). A level whose expectedDefeats
+        // only counted kills would never complete. Here we destroy the enemy directly (not via
+        // GetDamage/Destruction) to simulate exactly that natural-despawn path.
+        LevelCompletionTracker tracker = CreateTracker(expectedDefeats: 1);
+        Enemy enemy = CreateEnemy();
+        tracker.Register(enemy);
+        yield return null;
+
+        int fireCount = 0;
+        tracker.OnLevelComplete.AddListener(() => fireCount++);
+
+        Object.Destroy(enemy.gameObject);
+        yield return null;
+
+        Assert.AreEqual(1, fireCount, "an enemy that despawns naturally (never killed) should still count toward level completion");
+    }
 }

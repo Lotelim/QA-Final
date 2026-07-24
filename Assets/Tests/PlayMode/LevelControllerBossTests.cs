@@ -91,4 +91,23 @@ public class LevelControllerBossTests
 
         Assert.AreEqual(0, CountBossClones());
     }
+
+    [UnityTest]
+    public IEnumerator OnBossSpawned_FiresWithTheInstantiatedBosssEnemyComponent()
+    {
+        CreatePlayer();
+        GameObject bossPrefab = TestSceneHelpers.CreatePlaceholder(spawned, "TestBossPrefab");
+        var enemyOnPrefab = bossPrefab.AddComponent<Enemy>();
+        enemyOnPrefab.hitEffect = TestSceneHelpers.CreatePlaceholder(spawned, "HitFX");
+        enemyOnPrefab.destructionVFX = TestSceneHelpers.CreatePlaceholder(spawned, "DestructionFX");
+        LevelController controller = CreateLevelController(bossPrefab, bossSpawnDelay: 0.05f);
+
+        Enemy spawnedBossEnemy = null;
+        controller.OnBossSpawned += e => spawnedBossEnemy = e;
+
+        yield return new WaitForSeconds(0.15f);
+
+        Assert.IsNotNull(spawnedBossEnemy);
+        Assert.AreNotSame(enemyOnPrefab, spawnedBossEnemy, "should be the spawned instance's Enemy, not the prefab's");
+    }
 }
