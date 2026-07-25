@@ -28,7 +28,8 @@ public class PlayerMoving : MonoBehaviour {
     private void OnDestroy()
     {
         if (instance == this)
-            instance = null; 
+            instance = null;
+    }
 
     private void Start()
     {
