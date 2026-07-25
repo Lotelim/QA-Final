@@ -56,6 +56,8 @@ public class ShieldIntegrationTests
         enemy.GetDamage(3);
         Assert.AreEqual(10, enemy.health);
         Assert.AreEqual(2, shield.shieldHealth);
+
+        enemy.GetDamage(4); 
         Assert.AreEqual(8, enemy.health);
         Assert.IsFalse(shield.IsActive);
     }
