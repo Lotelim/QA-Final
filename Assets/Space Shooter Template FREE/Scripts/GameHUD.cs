@@ -73,7 +73,10 @@ public class GameHUD : MonoBehaviour
     void HandleBossHealthChanged(int current, int max)
     {
         if (bossHealthFill != null)
+        {
+            Debug.Log(current + " hp");
             bossHealthFill.fillAmount = max > 0 ? Mathf.Clamp01((float)current / max) : 0f;
+        }
     }
 
     void HandleBossDefeated()

@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 9113850766773366130}
   - component: {fileID: 1475110256751639890}
   - component: {fileID: 2545422117683206091}
-  - component: {fileID: 6260105549376677559}
   - component: {fileID: 6726779081083143616}
   - component: {fileID: 9092691401154646539}
   m_Layer: 0
@@ -158,27 +157,6 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.755
---- !u!114 &6260105549376677559
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8220842935417635794}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cb93e18709841574888ca778559f3bc2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: SpaceShooter.Runtime::Enemy
-  health: 500
-  Projectile: {fileID: 0}
-  destructionVFX: {fileID: 1280240331523082, guid: 45ae5851ef2832044bba82850372d67b,
-    type: 3}
-  hitEffect: {fileID: 1256001557233130, guid: 2dd0bdb7830e6644da169b32252dca96, type: 3}
-  shotChance: 0
-  shotTimeMin: 0
-  shotTimeMax: 0
-  maxHealth: 0
 --- !u!114 &6726779081083143616
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -195,10 +173,10 @@ MonoBehaviour:
   minDirectionHoldTime: 1
   maxDirectionHoldTime: 3
   turnAcceleration: 4
-  minXOffset: 1.5
-  maxXOffset: 1.5
-  minYOffset: 1.5
-  maxYOffset: 3
+  minXOffset: 3
+  maxXOffset: 6
+  minYOffset: 3
+  maxYOffset: 6
 --- !u!114 &9092691401154646539
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -211,3 +189,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0dcb890758b30984c9ccf8b8d987ac94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: SpaceShooter.Runtime::Boss
+  health: 500
+  Projectile: {fileID: 1373690366928948, guid: fdaaab53a8b4c0143b19d2a2e4007e44, type: 3}
+  destructionVFX: {fileID: 1280240331523082, guid: 45ae5851ef2832044bba82850372d67b,
+    type: 3}
+  hitEffect: {fileID: 1256001557233130, guid: 2dd0bdb7830e6644da169b32252dca96, type: 3}
+  shotChance: 0
+  shotTimeMin: 0
+  shotTimeMax: 0
+  maxHealth: 0
