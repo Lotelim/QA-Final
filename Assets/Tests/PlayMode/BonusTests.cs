@@ -4,10 +4,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-/// <summary>
-/// PlayMode tests proving a Bonus power-up increases the player's weapon power on pickup
-/// (capped at max) and destroys itself, using a real 2D trigger collision.
-/// </summary>
+
 public class BonusTests
 {
     readonly List<GameObject> spawned = new List<GameObject>();
@@ -18,8 +15,6 @@ public class BonusTests
         TestSceneHelpers.DestroyAll(spawned);
         PlayerShooting.instance = null;
 
-        // The PlayerShooting created here fires its own shot each test; sweep it up so it can't
-        // be mistaken for a leftover shot by other test files that count "TestProjectile(Clone)".
         foreach (Transform t in Object.FindObjectsByType<Transform>(FindObjectsSortMode.None))
             if (t.gameObject.name == "TestProjectile(Clone)")
                 Object.Destroy(t.gameObject);
@@ -84,7 +79,7 @@ public class BonusTests
     [UnityTest]
     public IEnumerator PlayerPickup_AtMaxWeaponPower_DoesNotExceedMax()
     {
-        CreatePlayerWithShooting(weaponPower: 4); // matches PlayerShooting.maxweaponPower default
+        CreatePlayerWithShooting(weaponPower: 4); 
         GameObject bonus = CreateBonus(Vector3.zero);
 
         yield return null;

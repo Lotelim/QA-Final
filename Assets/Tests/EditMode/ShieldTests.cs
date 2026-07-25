@@ -1,12 +1,6 @@
 using NUnit.Framework;
 using UnityEngine;
 
-/// <summary>
-/// EditMode tests for the pure damage-absorption math of the Shield component,
-/// written before Shield.cs existed to pin down the exact contract:
-/// a shield absorbs as much incoming damage as it has points for, and lets
-/// only the overflow through to whatever is behind it.
-/// </summary>
 public class ShieldTests
 {
     static Shield CreateShield(int shieldHealth)

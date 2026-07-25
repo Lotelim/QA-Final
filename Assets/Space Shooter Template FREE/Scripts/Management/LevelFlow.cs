@@ -1,11 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-/// <summary>
-/// Loads the next level's scene once LevelCompletionTracker reports the current level clear.
-/// Kept separate from LevelCompletionTracker so the completion-detection logic itself can be
-/// unit tested without touching SceneManager.
-/// </summary>
 [RequireComponent(typeof(LevelCompletionTracker))]
 public class LevelFlow : MonoBehaviour
 {

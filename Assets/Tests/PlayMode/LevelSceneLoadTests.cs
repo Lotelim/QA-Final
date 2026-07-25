@@ -4,15 +4,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
-/// <summary>
-/// Smoke tests that load the actual generated Level_1/Level_2 scenes and verify the content
-/// LevelContentBuilder wired up is really there: level-completion tracking, the Level_2 shielded
-/// wave and boss, and correct scene-transition targets.
-///
-/// These load real scenes via SceneManager and are run in isolation (a dedicated -testFilter
-/// pass, not part of the main regression suite) since loading a full gameplay scene starts real
-/// Player/PlayerMoving/PoolingController singletons that would otherwise leak into other fixtures.
-/// </summary>
 public class LevelSceneLoadTests
 {
     static int cleanupSceneCounter;
@@ -26,10 +17,6 @@ public class LevelSceneLoadTests
         PoolingController.instance = null;
         LevelCompletionTracker.instance = null;
 
-        // Loading Level_1/Level_2 leaves their real Main Camera (and everything else) as the
-        // active scene content for the rest of the run - e.g. it would make Camera.main resolve
-        // to the wrong camera in every later PlayMode fixture. Swap to a fresh empty scene and
-        // unload the level scene so later tests get a clean slate again.
         Scene loadedLevelScene = SceneManager.GetActiveScene();
         Scene cleanScene = SceneManager.CreateScene("LevelSceneLoadTests_Cleanup_" + cleanupSceneCounter++);
         SceneManager.SetActiveScene(cleanScene);

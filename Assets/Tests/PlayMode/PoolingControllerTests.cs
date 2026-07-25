@@ -27,12 +27,9 @@ public class PoolingControllerTests
     [UnityTest]
     public IEnumerator Start_PrewarmsConfiguredCountAsInactiveClones()
     {
-        // Counted via the pooler's own transform (CreateNewList parents every clone under it),
-        // rather than a scene-wide name search, so this can't be affected by objects other tests
-        // in this fixture leave behind.
         GameObject prefab = TestSceneHelpers.CreatePlaceholder(spawned, "PooledThing");
         PoolingController pooler = CreatePooler(prefab, count: 3);
-        yield return null; // Start() runs
+        yield return null; 
 
         Assert.AreEqual(3, pooler.transform.childCount);
         for (int i = 0; i < pooler.transform.childCount; i++)
@@ -62,7 +59,7 @@ public class PoolingControllerTests
         yield return null;
 
         GameObject first = pooler.GetPoolingObject(prefab);
-        first.SetActive(true); // now none are inactive/available
+        first.SetActive(true); 
 
         int countBefore = pooler.transform.childCount;
         GameObject second = pooler.GetPoolingObject(prefab);

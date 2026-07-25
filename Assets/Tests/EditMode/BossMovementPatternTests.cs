@@ -1,11 +1,7 @@
 using NUnit.Framework;
 using UnityEngine;
 
-/// <summary>
-/// EditMode tests for the pure direction-selection math behind the boss's "moves in various
-/// directions" behavior, using an injected roll instead of UnityEngine.Random so the mapping
-/// is fully deterministic.
-/// </summary>
+
 public class BossMovementPatternTests
 {
     [TestCase(0.00f, BossDirection.Left)]
@@ -26,7 +22,6 @@ public class BossMovementPatternTests
     [Test]
     public void PickNextDirection_AtRollOfExactlyOne_ClampsToLastDirectionInsteadOfOverflowing()
     {
-        // Defensive: Random.value can return exactly 1.0f, which would otherwise index past the array.
         Assert.AreEqual(BossDirection.Idle, BossMovementPattern.PickNextDirection(1f));
     }
 

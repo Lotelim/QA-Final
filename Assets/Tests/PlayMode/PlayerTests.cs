@@ -36,9 +36,6 @@ public class PlayerTests
     [UnityTest]
     public IEnumerator GetDamage_AnyAmount_DestroysThePlayer()
     {
-        // Destroy() is deferred to end-of-frame, so each case needs a yield before checking
-        // for null; looping in one coroutine (rather than [UnityTest]+[TestCase], which this
-        // Test Framework version doesn't support together) covers 1/999/0 damage.
         foreach (int damage in new[] { 1, 999, 0 })
         {
             Player player = CreatePlayer();
@@ -58,8 +55,8 @@ public class PlayerTests
         yield return null;
         Assert.AreSame(player, Player.instance);
 
-        player.GetDamage(1); // destroys the player
-        yield return null; // Destroy() (and thus OnDestroy) is deferred to end-of-frame
+        player.GetDamage(1); 
+        yield return null; 
 
         Assert.IsTrue(Player.instance == null, "Player.instance should be cleared once the player is destroyed");
     }
@@ -67,17 +64,12 @@ public class PlayerTests
     [UnityTest]
     public IEnumerator OnDestroy_LetsANewPlayerTakeOver_AsHappensOnALevelTransition()
     {
-        // Regression test for the actual failure mode: Level 1's Player is destroyed when its
-        // scene unloads, then Level 2's Player Awakes. Without clearing the static instance on
-        // destroy, Awake's "if (instance == null)" guard would stay false forever (instance still
-        // pointing at the old, destroyed Player), and the new level's Player would never become
-        // reachable via Player.instance for the rest of the game.
         Player levelOnePlayer = CreatePlayer();
         yield return null;
         Assert.AreSame(levelOnePlayer, Player.instance);
 
-        levelOnePlayer.GetDamage(1); // simulates the old scene's Player going away
-        yield return null; // let the old Player actually finish being destroyed first, as a real scene unload would
+        levelOnePlayer.GetDamage(1); 
+        yield return null; 
 
         Player levelTwoPlayer = CreatePlayer();
         yield return null;
@@ -95,7 +87,7 @@ public class PlayerTests
         player.OnPlayerDied += () => died = true;
 
         player.GetDamage(1);
-        yield return null; // Destroy() (and thus OnDestroy) is deferred to end-of-frame
+        yield return null; 
 
         Assert.IsTrue(died);
     }

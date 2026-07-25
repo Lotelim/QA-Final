@@ -5,10 +5,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.TestTools;
 
-/// <summary>
-/// PlayMode tests for the on-screen HUD: wave-number text, the boss health bar (shown only
-/// while a boss is alive), and the win/lose overlays.
-/// </summary>
 public class GameHUDTests
 {
     readonly List<GameObject> spawned = new List<GameObject>();
@@ -76,9 +72,6 @@ public class GameHUDTests
     [UnityTest]
     public IEnumerator WaveStarted_UpdatesWaveText_EvenForAZeroDelayFirstWave()
     {
-        // Exercises the race GameHUD's script execution order (-100) exists to prevent: a
-        // zero-delay first wave fires OnWaveStarted synchronously from inside
-        // LevelController.Start() itself, so the HUD must already be subscribed by then.
         CreatePlayer();
         GameObject wavePrefab = TestSceneHelpers.CreatePlaceholder(spawned, "TestWavePrefabForHud");
         LevelController controller = CreateLevelController();
@@ -86,7 +79,7 @@ public class GameHUDTests
 
         GameHUD hud = CreateHud();
 
-        yield return null; // both Start() methods run this frame; wave 1 spawns immediately
+        yield return null; 
 
         Assert.AreEqual("Wave 1", hud.waveText.text);
     }
@@ -96,7 +89,7 @@ public class GameHUDTests
     {
         CreatePlayer();
         GameObject bossPrefab = TestSceneHelpers.CreatePlaceholder(spawned, "TestBossPrefabForHud");
-        var bossEnemy = bossPrefab.AddComponent<Boss>(); // matches the real Boss prefab: Boss extends Enemy directly
+        var bossEnemy = bossPrefab.AddComponent<Boss>(); 
         bossEnemy.health = 100;
         bossEnemy.hitEffect = TestSceneHelpers.CreatePlaceholder(spawned, "HitFX");
         bossEnemy.destructionVFX = TestSceneHelpers.CreatePlaceholder(spawned, "DestructionFX");
@@ -107,7 +100,7 @@ public class GameHUDTests
 
         GameHUD hud = CreateHud();
 
-        yield return new WaitForSeconds(0.15f); // let the boss actually spawn
+        yield return new WaitForSeconds(0.15f); 
 
         Assert.IsTrue(hud.bossHealthBarRoot.activeSelf, "health bar should show once the boss spawns");
         Assert.AreEqual(1f, hud.bossHealthFill.value, 0.001f, "should start full");
@@ -122,7 +115,7 @@ public class GameHUDTests
         Assert.AreEqual(0.5f, hud.bossHealthFill.value, 0.001f, "fill should track remaining health");
 
         spawnedBoss.GetDamage(50);
-        yield return null; // let Destroy() (and OnDestroyed) take effect
+        yield return null; 
 
         Assert.IsFalse(hud.bossHealthBarRoot.activeSelf, "health bar should hide once the boss is defeated");
     }
@@ -132,7 +125,7 @@ public class GameHUDTests
     {
         GameObject playerGO = CreatePlayer();
         GameHUD hud = CreateHud();
-        yield return null; // GameHUD.Start() subscribes to Player.instance.OnPlayerDied
+        yield return null; 
 
         playerGO.GetComponent<Player>().GetDamage(1);
         yield return null;
@@ -147,12 +140,12 @@ public class GameHUDTests
         var tracker = trackerGO.AddComponent<LevelCompletionTracker>();
         tracker.expectedDefeats = 1;
         var flow = trackerGO.AddComponent<LevelFlow>();
-        flow.nextSceneName = ""; // last level - no further scene to load
+        flow.nextSceneName = ""; 
 
         GameHUD hud = CreateHud();
         yield return null;
 
-        tracker.OnLevelComplete.Invoke(); // simulate the level actually completing
+        tracker.OnLevelComplete.Invoke(); 
 
         Assert.IsTrue(hud.winScreenRoot.activeSelf);
     }
@@ -164,7 +157,7 @@ public class GameHUDTests
         var tracker = trackerGO.AddComponent<LevelCompletionTracker>();
         tracker.expectedDefeats = 1;
         var flow = trackerGO.AddComponent<LevelFlow>();
-        flow.nextSceneName = "Level_2"; // more levels to go - LevelFlow itself handles the transition
+        flow.nextSceneName = "Level_2"; 
 
         GameHUD hud = CreateHud();
         yield return null;

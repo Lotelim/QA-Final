@@ -6,14 +6,6 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>
-/// One-off content-authoring tool: builds Level_1 (a straight adaptation of Demo_Scene, wired
-/// with level-completion tracking) and Level_2 (harder timings, a shielded-enemy wave, and a
-/// boss), plus the prefab variants they need. Uses real Editor APIs (AssetDatabase,
-/// PrefabUtility, EditorSceneManager) rather than hand-edited YAML so Unity itself keeps every
-/// GUID/fileID reference valid. Safe to re-run - it rebuilds its generated assets from scratch
-/// each time rather than mutating them in place.
-/// </summary>
 public static class LevelContentBuilder
 {
     const string ScenesFolder = "Assets/Space Shooter Template FREE/Scenes";
@@ -53,8 +45,6 @@ public static class LevelContentBuilder
         if (AssetDatabase.LoadMainAssetAtPath(path) != null)
             AssetDatabase.DeleteAsset(path);
     }
-
-    // ---- Prefabs ----
 
     static GameObject BuildShieldedEnemyPrefab()
     {
@@ -105,23 +95,18 @@ public static class LevelContentBuilder
 
             var spriteRenderer = root.AddComponent<SpriteRenderer>();
             spriteRenderer.sprite = AssetDatabase.LoadAssetAtPath<Sprite>(EnemySpritePath);
-            spriteRenderer.color = new Color(1f, 0.35f, 0.35f); // tint red so it reads as distinct from regular enemies
+            spriteRenderer.color = new Color(1f, 0.35f, 0.35f);
             spriteRenderer.sortingLayerID = baseSpriteRenderer.sortingLayerID;
             spriteRenderer.sortingOrder = baseSpriteRenderer.sortingOrder;
 
-            root.transform.localScale = new Vector3(3.5f, 3.5f, 1f); // "huge"
+            root.transform.localScale = new Vector3(3.5f, 3.5f, 1f); 
 
             var collider = root.AddComponent<CircleCollider2D>();
             collider.isTrigger = true;
             collider.radius = baseCollider.radius;
-
-            // Boss extends Enemy directly, so it IS the Enemy component - adding a separate
-            // Enemy component alongside it would create two independent health pools and make
-            // GetComponent<Enemy>() ambiguous (exactly what caused the boss health bar to not
-            // track damage: the HUD and the damage-dealing collision code could resolve to two
-            // different component instances).
+      
             var boss = root.AddComponent<Boss>();
-            boss.health = 500; // huge HP compared to a regular enemy's 2
+            boss.health = 500; 
             boss.hitEffect = baseEnemy.hitEffect;
             boss.destructionVFX = baseEnemy.destructionVFX;
 
@@ -136,9 +121,6 @@ public static class LevelContentBuilder
 
         return AssetDatabase.LoadAssetAtPath<GameObject>(BossPath);
     }
-
-    // ---- Scenes ----
-
     static void BuildLevel1()
     {
         DeleteIfExists(Level1Path);
@@ -165,7 +147,6 @@ public static class LevelContentBuilder
         GameObject gameController = FindRoot(scene, "Game_Controller");
         var levelController = gameController.GetComponentInChildren<LevelController>();
 
-        // Harder than Level 1: waves arrive sooner, power-ups are rarer, planets busier.
         foreach (var wave in levelController.enemyWaves)
             wave.timeToStart *= 0.6f;
         levelController.timeForNewPowerup *= 1.5f;
@@ -182,7 +163,7 @@ public static class LevelContentBuilder
         levelController.boss = bossPrefab;
         levelController.bossSpawnDelay = lastWaveTime + 12f;
 
-        int expectedDefeats = ComputeExpectedDefeats(levelController) + 1; // +1 for the boss
+        int expectedDefeats = ComputeExpectedDefeats(levelController) + 1; 
         ConfigureLevelFlow(gameController, expectedDefeats, nextSceneName: "");
         BuildHud(scene);
 
@@ -235,11 +216,8 @@ public static class LevelContentBuilder
             scenes.Add(new EditorBuildSettingsScene(path, true));
     }
 
-    // ---- HUD ----
-
     static void BuildHud(UnityEngine.SceneManagement.Scene scene)
     {
-        // Safe to re-run: remove any previously-built HUD first rather than duplicating one.
         foreach (GameObject root in scene.GetRootGameObjects())
             if (root.name == "HUD Canvas")
                 Object.DestroyImmediate(root);

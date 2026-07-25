@@ -1,7 +1,6 @@
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 
-/// <summary>One-off local build script used to produce a WebGL build for manual/browser smoke testing.</summary>
 public static class WebGLBuildScript
 {
     [MenuItem("Tools/QA Final/Build WebGL (Level_1 + Level_2)")]

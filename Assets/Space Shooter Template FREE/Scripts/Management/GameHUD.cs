@@ -2,22 +2,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-/// <summary>
-/// Drives the on-screen HUD: current wave number, a boss health bar (shown only while a boss
-/// is alive), and win/lose overlays with a restart button. Wires itself to whatever
-/// LevelController/Player/LevelCompletionTracker exist in the scene.
-///
-/// The LevelController subscription happens in Awake(), not Start(): Unity guarantees every
-/// object's Awake() completes before any object's Start() begins, and LevelController only
-/// ever fires its events from within its own Start() (a zero-delay first wave fires "wave
-/// started" synchronously from inside LevelController.Start() itself) - so subscribing in
-/// Awake() is the only ordering-independent way to guarantee this HUD never misses that first
-/// event. Player.instance/LevelCompletionTracker.instance, by contrast, are set in their own
-/// Awake() calls, so this HUD only needs Start() (which runs after every Awake()) to safely
-/// read them, regardless of GameObject/component ordering in the scene.
-/// (Script Execution Order was tried first and does NOT work here - it only orders the
-/// Update-family callbacks, not Awake/Start.)
-/// </summary>
 public class GameHUD : MonoBehaviour
 {
     public Text waveText;
@@ -89,9 +73,7 @@ public class GameHUD : MonoBehaviour
     }
 
     void HandleLevelComplete()
-    {
-        // Only the last level in the chain (no next scene configured) shows a win screen;
-        // earlier levels just transition via LevelFlow instead.
+    {  
         var flow = FindFirstObjectByType<LevelFlow>();
         bool isLastLevel = flow == null || string.IsNullOrEmpty(flow.nextSceneName);
         if (isLastLevel && winScreenRoot != null)

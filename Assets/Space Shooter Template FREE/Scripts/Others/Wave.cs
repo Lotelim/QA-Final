@@ -2,10 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// This script generates an enemy wave. It defines how many enemies will be emerging, their speed and emerging interval. 
-/// It also defines their shooting mode. It defines their moving path.
-/// </summary>
 [System.Serializable]
 public class Shooting
 {
@@ -54,11 +50,11 @@ public class Wave : MonoBehaviour {
         StartCoroutine(CreateEnemyWave()); 
     }
 
-    IEnumerator CreateEnemyWave() //depending on chosed parameters generating enemies and defining their parameters
+    IEnumerator CreateEnemyWave() 
     {
         for (int i = 0; i < count; i++)
         {
-            if (Player.instance == null) //stop spawning once the player is gone, matching LevelController's wave-spawn guard
+            if (Player.instance == null) 
                 yield break;
 
             GameObject newEnemy;
@@ -76,7 +72,7 @@ public class Wave : MonoBehaviour {
             newEnemy.SetActive(true);
             yield return new WaitForSeconds(timeBetween);
         }
-        if (testMode)       //if testMode is activated, waiting for 3 sec and re-generating the wave
+        if (testMode)       
         {
             yield return new WaitForSeconds(3);
             StartCoroutine(CreateEnemyWave());
@@ -90,7 +86,7 @@ public class Wave : MonoBehaviour {
         DrawPath(pathPoints);  
     }
 
-    void DrawPath(Transform[] path) //drawing the path in the Editor
+    void DrawPath(Transform[] path) 
     {
         Vector3[] pathPositions = new Vector3[path.Length];
         for (int i = 0; i < path.Length; i++)

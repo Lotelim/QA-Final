@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>Shared setup/teardown helpers for PlayMode tests that need a configured main camera or disposable placeholder GameObjects.</summary>
 public static class TestSceneHelpers
 {
     public static Camera CreateMainCamera(List<GameObject> spawned)

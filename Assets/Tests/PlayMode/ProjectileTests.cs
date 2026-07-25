@@ -4,9 +4,6 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-/// <summary>
-/// PlayMode tests for Projectile's friend/foe damage routing via real 2D trigger collisions.
-/// </summary>
 public class ProjectileTests
 {
     readonly List<GameObject> spawned = new List<GameObject>();
@@ -105,15 +102,10 @@ public class ProjectileTests
     [UnityTest]
     public IEnumerator EnemyBullet_HittingAPlayerTaggedObjectWithNoLivePlayerInstance_DoesNotErrorOut()
     {
-        // Regression test for the Projectile.cs null-guard: without it, Player.instance being
-        // left stale after the real Player was destroyed (e.g. mid level-transition) would throw
-        // a MissingReferenceException from inside OnTriggerEnter2D. Unity Test Framework fails
-        // a test automatically if anything logs an error/exception during it, so this test
-        // passes precisely by NOT logging one.
         GameObject firstPlayer = CreatePlayerTarget(new Vector3(-100, -100, 0));
         yield return null;
         Object.Destroy(firstPlayer);
-        yield return null; // Player.instance is now cleared by the OnDestroy fix
+        yield return null;
 
         GameObject bareTarget = TestSceneHelpers.CreatePlaceholder(spawned, "BarePlayerTag");
         bareTarget.tag = "Player";

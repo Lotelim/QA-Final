@@ -4,10 +4,6 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-/// <summary>
-/// PlayMode tests proving Enemy actually routes damage through an attached Shield
-/// before touching health, and behaves exactly as before when no Shield is present.
-/// </summary>
 public class ShieldIntegrationTests
 {
     readonly List<GameObject> spawned = new List<GameObject>();
@@ -17,9 +13,6 @@ public class ShieldIntegrationTests
         var go = new GameObject("TestEnemy");
         spawned.Add(go);
 
-        // Shield must be added before Enemy: Enemy.Awake() runs synchronously the instant
-        // AddComponent<Enemy>() is called and caches GetComponent<Shield>() right then - if
-        // Shield isn't on the GameObject yet at that exact moment, the cache stays null forever.
         if (shieldHealth.HasValue)
         {
             var shield = go.AddComponent<Shield>();
@@ -55,16 +48,14 @@ public class ShieldIntegrationTests
     public IEnumerator GetDamage_WithActiveShield_ProtectsHealthUntilShieldDepleted()
     {
         GameObject enemyObject = CreateEnemy(health: 10, shieldHealth: 5);
-        yield return null; // let Awake run so Enemy caches its Shield reference
+        yield return null; 
 
         Enemy enemy = enemyObject.GetComponent<Enemy>();
         Shield shield = enemyObject.GetComponent<Shield>();
 
-        enemy.GetDamage(3); // fully absorbed by shield
+        enemy.GetDamage(3);
         Assert.AreEqual(10, enemy.health);
         Assert.AreEqual(2, shield.shieldHealth);
-
-        enemy.GetDamage(4); // 2 more absorbed (shield now depleted), 2 pass through to health
         Assert.AreEqual(8, enemy.health);
         Assert.IsFalse(shield.IsActive);
     }
@@ -88,9 +79,9 @@ public class ShieldIntegrationTests
         yield return null;
 
         Enemy enemy = enemyObject.GetComponent<Enemy>();
-        enemy.GetDamage(10); // 2 absorbed by shield, 8 through to a 5-health enemy: lethal
+        enemy.GetDamage(10); 
 
-        yield return null; // let Destroy() take effect
+        yield return null; 
 
         Assert.IsTrue(enemyObject == null);
     }

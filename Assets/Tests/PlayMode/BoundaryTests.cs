@@ -4,10 +4,6 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-/// <summary>
-/// PlayMode tests proving Boundary cleans up Projectile- and Bonus-tagged objects once they
-/// exit its (viewport-sized) trigger collider, and leaves other objects alone.
-/// </summary>
 public class BoundaryTests
 {
     readonly List<GameObject> spawned = new List<GameObject>();
@@ -45,11 +41,11 @@ public class BoundaryTests
     {
         CreateBoundary();
         GameObject projectile = CreateTaggedTrigger("Projectile", Vector3.zero);
-        yield return null; // Boundary.Start() resizes its collider to viewport size
-        yield return new WaitForFixedUpdate(); // let physics register the initial overlap first
+        yield return null; 
+        yield return new WaitForFixedUpdate(); 
 
-        projectile.transform.position = new Vector3(0, 10000f, 0); // teleport far outside
-        yield return new WaitForFixedUpdate(); // now physics can detect the exit
+        projectile.transform.position = new Vector3(0, 10000f, 0); 
+        yield return new WaitForFixedUpdate(); 
         yield return null;
 
         Assert.IsTrue(projectile == null);
@@ -61,10 +57,10 @@ public class BoundaryTests
         CreateBoundary();
         GameObject bonus = CreateTaggedTrigger("Bonus", Vector3.zero);
         yield return null;
-        yield return new WaitForFixedUpdate(); // let physics register the initial overlap first
+        yield return new WaitForFixedUpdate(); 
 
         bonus.transform.position = new Vector3(0, 10000f, 0);
-        yield return new WaitForFixedUpdate(); // now physics can detect the exit
+        yield return new WaitForFixedUpdate(); 
         yield return null;
 
         Assert.IsTrue(bonus == null);

@@ -1,10 +1,5 @@
 using UnityEngine;
 
-/// <summary>
-/// Adds a damage-absorbing shield to whatever it's attached to (typically an Enemy).
-/// Enemy checks for this component and routes incoming damage through it before
-/// touching its own health, so existing enemies without a Shield are unaffected.
-/// </summary>
 public class Shield : MonoBehaviour
 {
     [Tooltip("Shield hit points. Absorbs incoming damage before the owner's health is touched.")]
@@ -21,10 +16,7 @@ public class Shield : MonoBehaviour
             shieldVFX.SetActive(IsActive);
     }
 
-    /// <summary>
-    /// Absorbs as much of the incoming damage as the shield has points for and
-    /// returns whatever overflows through to the owner's own health.
-    /// </summary>
+
     public int AbsorbDamage(int incomingDamage)
     {
         if (incomingDamage <= 0 || shieldHealth <= 0)

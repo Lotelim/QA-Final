@@ -21,9 +21,9 @@ public class RepeatingBackgroundTests
         GameObject go = TestSceneHelpers.CreatePlaceholder(spawned, "TestBackground");
         var bg = go.AddComponent<RepeatingBackground>();
         bg.verticalSize = 5f;
-        go.transform.position = new Vector3(1, -5.1f, 0); // just below -verticalSize
+        go.transform.position = new Vector3(1, -5.1f, 0);
 
-        yield return null; // Update() runs
+        yield return null;
 
         Assert.That(go.transform.position.y, Is.EqualTo(-5.1f + 10f).Within(0.001f));
         Assert.That(go.transform.position.x, Is.EqualTo(1f).Within(0.001f), "reposition should only affect Y");

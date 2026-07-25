@@ -1,18 +1,8 @@
 using System;
 using UnityEngine;
 
-/// <summary>
-/// Catmull-Rom spline helpers used to move enemies/waves along their path points.
-/// Extracted from Wave.cs and FollowThePath.cs, which used to each carry an identical
-/// private copy of this math (Interpolate/CreatePoints) with no automated coverage.
-/// </summary>
 public static class SplineUtility
 {
-    /// <summary>
-    /// Pads a raw path with the extra control points Catmull-Rom needs before the first
-    /// and after the last point, splicing the ends together instead when the path is a
-    /// closed loop (first point == last point).
-    /// </summary>
     public static Vector3[] PadForCatmullRom(Vector3[] path)
     {
         if (path == null || path.Length < 2)
@@ -35,7 +25,6 @@ public static class SplineUtility
         return newPathPos;
     }
 
-    /// <summary>Evaluates the padded path at t in [0,1] using Catmull-Rom interpolation.</summary>
     public static Vector3 Interpolate(Vector3[] paddedPath, float t)
     {
         int numSections = paddedPath.Length - 3;
@@ -48,7 +37,5 @@ public static class SplineUtility
         return 0.5f * ((-a + 3f * b - 3f * c + d) * (u * u * u) + (2f * a - 5f * b + 4f * c - d) * (u * u) + (-a + c) * u + 2f * b);
     }
 
-    /// <summary>Convenience one-shot call: pads then interpolates. Prefer caching the padded array
-    /// (via <see cref="PadForCatmullRom"/>) when evaluating the same path every frame.</summary>
     public static Vector3 GetPointOnPath(Vector3[] rawPath, float t) => Interpolate(PadForCatmullRom(rawPath), t);
 }

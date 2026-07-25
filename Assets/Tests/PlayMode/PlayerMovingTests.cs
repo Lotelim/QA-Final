@@ -22,11 +22,9 @@ public class PlayerMovingTests
         Camera cam = TestSceneHelpers.CreateMainCamera(spawned);
         GameObject go = TestSceneHelpers.CreatePlaceholder(spawned, "TestPlayerMoving");
         var moving = go.AddComponent<PlayerMoving>();
-        // Borders is a plain [Serializable] class field with no initializer; the Editor/prefab
-        // deserialization path that normally populates it never runs for a runtime AddComponent.
         moving.borders = new Borders();
 
-        yield return null; // Start() runs
+        yield return null;
 
         float expectedMinX = cam.ViewportToWorldPoint(Vector2.zero).x + moving.borders.minXOffset;
         float expectedMaxX = cam.ViewportToWorldPoint(Vector2.right).x - moving.borders.maxXOffset;
@@ -44,15 +42,13 @@ public class PlayerMovingTests
     {
         TestSceneHelpers.CreateMainCamera(spawned);
         GameObject go = TestSceneHelpers.CreatePlaceholder(spawned, "TestPlayerMoving");
-        var moving = go.AddComponent<PlayerMoving>();
-        // Borders is a plain [Serializable] class field with no initializer; the Editor/prefab
-        // deserialization path that normally populates it never runs for a runtime AddComponent.
+        var moving = go.AddComponent<PlayerMoving>(); 
         moving.borders = new Borders();
 
-        yield return null; // Start() computes borders
+        yield return null; 
 
         go.transform.position = new Vector3(moving.borders.maxX + 50f, moving.borders.maxY + 50f, 0);
-        yield return null; // Update() should clamp it back inside
+        yield return null;
 
         Assert.That(go.transform.position.x, Is.LessThanOrEqualTo(moving.borders.maxX));
         Assert.That(go.transform.position.y, Is.LessThanOrEqualTo(moving.borders.maxY));

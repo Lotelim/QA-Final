@@ -22,7 +22,7 @@ public class VisualEffectTests
         var vfx = go.AddComponent<VisualEffect>();
         vfx.destructionTime = 0.05f;
 
-        yield return null; // OnEnable starts the destruction coroutine
+        yield return null; 
         Assert.IsFalse(go == null, "should still be alive immediately after enabling");
 
         yield return new WaitForSeconds(0.2f);

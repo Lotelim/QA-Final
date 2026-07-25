@@ -2,11 +2,6 @@ using System;
 using NUnit.Framework;
 using UnityEngine;
 
-/// <summary>
-/// EditMode tests for the Catmull-Rom spline math shared by Wave (gizmo preview) and
-/// FollowThePath (runtime movement). Written before SplineUtility existed, to pin down
-/// the exact behavior that used to be duplicated in both call sites.
-/// </summary>
 public class SplineUtilityTests
 {
     static readonly Vector3[] StraightLine =
@@ -23,7 +18,7 @@ public class SplineUtilityTests
         new Vector3(0, 1, 0),
         new Vector3(1, 1, 0),
         new Vector3(1, 0, 0),
-        new Vector3(0, 0, 0), // closes the loop: last point == first point
+        new Vector3(0, 0, 0), 
     };
 
     static void AssertApprox(Vector3 expected, Vector3 actual, float tolerance = 0.0001f)
@@ -75,8 +70,6 @@ public class SplineUtilityTests
     [Test]
     public void Interpolate_OnClosedLoop_IsContinuousAcrossTheSeam()
     {
-        // For a path whose last point equals its first, the curve should not visibly
-        // "jump" when wrapping from t=1 back to t=0 (Wave/FollowThePath both loop on this).
         Vector3[] padded = SplineUtility.PadForCatmullRom(ClosedSquareLoop);
         Vector3 atStart = SplineUtility.Interpolate(padded, 0f);
         Vector3 atEnd = SplineUtility.Interpolate(padded, 1f);

@@ -4,10 +4,6 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-/// <summary>
-/// PlayMode tests for LevelController's optional single boss spawn, added to support
-/// Level 2. Mirrors the existing wave-spawn coroutine's Player.instance guard.
-/// </summary>
 public class LevelControllerBossTests
 {
     readonly List<GameObject> spawned = new List<GameObject>();
@@ -83,7 +79,6 @@ public class LevelControllerBossTests
     [UnityTest]
     public IEnumerator Boss_WhenPlayerIsAbsentAtSpawnTime_DoesNotSpawn()
     {
-        // no player created
         GameObject bossPrefab = TestSceneHelpers.CreatePlaceholder(spawned, "TestBossPrefab");
         CreateLevelController(bossPrefab, bossSpawnDelay: 0.05f);
 
@@ -97,7 +92,7 @@ public class LevelControllerBossTests
     {
         CreatePlayer();
         GameObject bossPrefab = TestSceneHelpers.CreatePlaceholder(spawned, "TestBossPrefab");
-        var enemyOnPrefab = bossPrefab.AddComponent<Boss>(); // matches the real Boss prefab: Boss extends Enemy directly
+        var enemyOnPrefab = bossPrefab.AddComponent<Boss>();
         enemyOnPrefab.hitEffect = TestSceneHelpers.CreatePlaceholder(spawned, "HitFX");
         enemyOnPrefab.destructionVFX = TestSceneHelpers.CreatePlaceholder(spawned, "DestructionFX");
         LevelController controller = CreateLevelController(bossPrefab, bossSpawnDelay: 0.05f);

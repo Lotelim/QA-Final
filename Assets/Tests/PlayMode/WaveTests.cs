@@ -4,11 +4,6 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-/// <summary>
-/// PlayMode tests for Wave's spawn coroutine, including a regression test for the
-/// missing Player.instance guard (Wave used to keep spawning enemies after the player
-/// was gone, unlike LevelController's equivalent coroutine).
-/// </summary>
 public class WaveTests
 {
     readonly List<GameObject> spawned = new List<GameObject>();
@@ -19,8 +14,6 @@ public class WaveTests
         TestSceneHelpers.DestroyAll(spawned);
         Player.instance = null;
 
-        // Wave.CreateEnemyWave() instantiates enemy clones with no tracked reference; sweep them
-        // up so one test's spawned enemies don't inflate the next test's count.
         foreach (Transform t in Object.FindObjectsByType<Transform>(FindObjectsSortMode.None))
             if (t.gameObject.name == "TestWaveEnemy(Clone)")
                 Object.Destroy(t.gameObject);
@@ -31,7 +24,7 @@ public class WaveTests
     GameObject CreateEnemyPrefabPlaceholder()
     {
         GameObject go = TestSceneHelpers.CreatePlaceholder(spawned, "TestWaveEnemy");
-        go.SetActive(false); // wave prefabs are inactive templates, activated once configured
+        go.SetActive(false); 
         go.AddComponent<FollowThePath>();
         var enemy = go.AddComponent<Enemy>();
         enemy.hitEffect = TestSceneHelpers.CreatePlaceholder(spawned, "HitFX");
@@ -99,14 +92,14 @@ public class WaveTests
         GameObject enemyPrefab = CreateEnemyPrefabPlaceholder();
         CreateWave(count: 5, timeBetween: 0.1f, enemyPrefab: enemyPrefab);
 
-        yield return new WaitForSeconds(0.15f); // let at least 1 enemy spawn
+        yield return new WaitForSeconds(0.15f); 
         int countBeforePlayerLeaves = CountActiveClones("TestWaveEnemy(Clone)");
         Assert.GreaterOrEqual(countBeforePlayerLeaves, 1);
 
         Object.Destroy(player);
-        yield return null; // Player.instance is now cleared
+        yield return null;
 
-        yield return new WaitForSeconds(0.5f); // long enough for the remaining enemies to have spawned without the guard
+        yield return new WaitForSeconds(0.5f); 
 
         Assert.AreEqual(countBeforePlayerLeaves, CountActiveClones("TestWaveEnemy(Clone)"),
             "no further enemies should spawn once Player.instance is gone");

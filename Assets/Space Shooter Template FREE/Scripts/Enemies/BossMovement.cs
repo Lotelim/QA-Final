@@ -1,10 +1,5 @@
 using UnityEngine;
 
-/// <summary>
-/// Moves a boss enemy around the play area: it picks a direction (left/right/up/down/idle),
-/// holds it for a random duration, then picks again, staying clamped within screen bounds.
-/// Used instead of FollowThePath (which only ever moves along one fixed spline).
-/// </summary>
 public class BossMovement : MonoBehaviour
 {
     [Tooltip("Movement speed in world units/second")]
@@ -27,7 +22,6 @@ public class BossMovement : MonoBehaviour
     float directionTimer;
     Vector2 currentVelocity;
 
-    /// <summary>Current speed the boss is actually moving at - ramps toward "speed" rather than snapping to it. Exposed for testing.</summary>
     public float CurrentSpeed => currentVelocity.magnitude;
 
     private void Start()
@@ -51,8 +45,6 @@ public class BossMovement : MonoBehaviour
         if (directionTimer <= 0f)
             PickNewDirection();
 
-        //ease toward the target direction's velocity instead of snapping to it every time
-        //CurrentDirection changes - the instant-snap version looked robotic/jittery.
         Vector2 targetVelocity = BossMovementPattern.ToVector(CurrentDirection) * speed;
         currentVelocity = Vector2.MoveTowards(currentVelocity, targetVelocity, turnAcceleration * speed * Time.deltaTime);
 

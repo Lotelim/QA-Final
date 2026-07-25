@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// This script contains the list of objects, which should be pooled. When receiving the command, it returns the object. If the object is not on the list, it creates the new object.
-/// </summary>
 [System.Serializable]
 public class PoolingObjects
 {
@@ -17,10 +14,9 @@ public class PoolingController : MonoBehaviour {
     [Tooltip("Your 'pooling' objects. Add new element and add the prefab to create the object prefab")]
     public PoolingObjects[] poolingObjectsClass;
 
-    //The list where 'pooling' objects will be stored
     List<GameObject> pooledObjectsList = new List<GameObject>();
 
-    public static PoolingController instance; //unique class instance for the easy access
+    public static PoolingController instance; 
 
     private void Awake()
     {
@@ -31,29 +27,23 @@ public class PoolingController : MonoBehaviour {
     private void OnDestroy()
     {
         if (instance == this)
-            instance = null; //without this, a stale reference from a previous scene blocks the next level's PoolingController from ever registering
+            instance = null; 
     }
 
     private void Start()
     {
-        CreateNewList();        //Create the new list of 'pooling' objects
-    }
-
-    void CreateNewList()
-    {
-        for (int i = 0; i < poolingObjectsClass.Length; i++)    //for each prefab create the needed amount of objects and deactivate them
+        for (int i = 0; i < poolingObjectsClass.Length; i++)
         {
             for (int k = 0; k < poolingObjectsClass[i].count; k++)
             {
                 GameObject newObj = Instantiate(poolingObjectsClass[i].pooledPrefab, transform);
                 pooledObjectsList.Add(newObj);
-                newObj.SetActive(false);                
+                newObj.SetActive(false);
             }
         }
     }
 
-    
-    public GameObject GetPoolingObject(GameObject prefab)   //Lookikng for the needed object by prefab name and return it
+    public GameObject GetPoolingObject(GameObject prefab)  
     {
         string cloneName = GetCloneName(prefab);
         for (int i =0; i<pooledObjectsList.Count; i++)      
@@ -63,10 +53,10 @@ public class PoolingController : MonoBehaviour {
                 return pooledObjectsList[i];
             }
         }
-        return AddNewObject(prefab);                        //if there is no object needed create the new one
+        return AddNewObject(prefab);                        
     }
 
-    GameObject AddNewObject(GameObject prefab)              //create the new object and add it to the list
+    GameObject AddNewObject(GameObject prefab)              
     {
         GameObject newObj = Instantiate(prefab, transform);
         pooledObjectsList.Add(newObj);

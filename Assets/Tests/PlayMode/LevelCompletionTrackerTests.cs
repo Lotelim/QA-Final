@@ -4,12 +4,6 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-/// <summary>
-/// PlayMode tests for level-clear detection: OnLevelComplete must fire exactly once,
-/// only once every registered enemy up to expectedDefeats has actually been destroyed -
-/// not merely whenever the currently-alive count happens to hit zero (which would
-/// misfire during the natural gap between waves).
-/// </summary>
 public class LevelCompletionTrackerTests
 {
     readonly List<GameObject> spawned = new List<GameObject>();
@@ -77,7 +71,7 @@ public class LevelCompletionTrackerTests
     {
         LevelCompletionTracker tracker = CreateTracker(expectedDefeats: 1);
         Enemy enemyA = CreateEnemy();
-        Enemy enemyB = CreateEnemy(); // registered, but not needed to reach expectedDefeats
+        Enemy enemyB = CreateEnemy(); 
         tracker.Register(enemyA);
         tracker.Register(enemyB);
         yield return null;
@@ -100,7 +94,7 @@ public class LevelCompletionTrackerTests
         LevelCompletionTracker tracker = CreateTracker(expectedDefeats: 2);
         Enemy enemyA = CreateEnemy();
         tracker.Register(enemyA);
-        tracker.Register(enemyA); // duplicate registration
+        tracker.Register(enemyA); 
         yield return null;
 
         int fireCount = 0;
@@ -117,7 +111,7 @@ public class LevelCompletionTrackerTests
     {
         LevelCompletionTracker tracker = CreateTracker(expectedDefeats: 1);
         Enemy enemy = CreateEnemy();
-        yield return null; // Enemy.Start() runs and should self-register since tracker.instance is set
+        yield return null; 
 
         int fireCount = 0;
         tracker.OnLevelComplete.AddListener(() => fireCount++);
@@ -130,12 +124,7 @@ public class LevelCompletionTrackerTests
 
     [UnityTest]
     public IEnumerator OnLevelComplete_CountsEnemiesThatDespawnNaturally_NotJustKills()
-    {
-        // Regression test for the real "stuck between Level 1 and Level 2" bug: most enemies
-        // in an actual playthrough fly past and are never shot down - they just reach the end
-        // of their path and self-destruct (as FollowThePath does). A level whose expectedDefeats
-        // only counted kills would never complete. Here we destroy the enemy directly (not via
-        // GetDamage/Destruction) to simulate exactly that natural-despawn path.
+    {  
         LevelCompletionTracker tracker = CreateTracker(expectedDefeats: 1);
         Enemy enemy = CreateEnemy();
         tracker.Register(enemy);
