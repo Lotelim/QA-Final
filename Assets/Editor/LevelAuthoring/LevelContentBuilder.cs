@@ -115,13 +115,17 @@ public static class LevelContentBuilder
             collider.isTrigger = true;
             collider.radius = baseCollider.radius;
 
-            var enemy = root.AddComponent<Enemy>();
-            enemy.health = 500; // huge HP compared to a regular enemy's 2
-            enemy.hitEffect = baseEnemy.hitEffect;
-            enemy.destructionVFX = baseEnemy.destructionVFX;
+            // Boss extends Enemy directly, so it IS the Enemy component - adding a separate
+            // Enemy component alongside it would create two independent health pools and make
+            // GetComponent<Enemy>() ambiguous (exactly what caused the boss health bar to not
+            // track damage: the HUD and the damage-dealing collision code could resolve to two
+            // different component instances).
+            var boss = root.AddComponent<Boss>();
+            boss.health = 500; // huge HP compared to a regular enemy's 2
+            boss.hitEffect = baseEnemy.hitEffect;
+            boss.destructionVFX = baseEnemy.destructionVFX;
 
             root.AddComponent<BossMovement>();
-            root.AddComponent<Boss>();
 
             PrefabUtility.SaveAsPrefabAsset(root, BossPath);
         }
@@ -268,11 +272,8 @@ public static class LevelContentBuilder
 
         GameObject barFill = CreateUIImage("Fill", barRoot.transform, new Color(0.85f, 0.15f, 0.15f, 1f));
         FillParent(barFill.GetComponent<RectTransform>());
-        Image fillImage = barFill.GetComponent<Image>();
-        fillImage.type = Image.Type.Filled;
-        fillImage.fillMethod = Image.FillMethod.Horizontal;
-        fillImage.fillOrigin = (int)Image.OriginHorizontal.Left;
-        fillImage.fillAmount = 1f;
+        Slider fillImage = barFill.GetComponent<Slider>();
+        fillImage.value = 1f;
         hud.bossHealthFill = fillImage;
 
         hud.winScreenRoot = CreateOverlayScreen("WinScreenRoot", canvasGO.transform, defaultFont, "YOU WIN", hud);

@@ -22,7 +22,7 @@ public class GameHUD : MonoBehaviour
 {
     public Text waveText;
     public GameObject bossHealthBarRoot;
-    public Image bossHealthFill;
+    public Slider bossHealthFill;
     public GameObject winScreenRoot;
     public GameObject loseScreenRoot;
 
@@ -73,10 +73,7 @@ public class GameHUD : MonoBehaviour
     void HandleBossHealthChanged(int current, int max)
     {
         if (bossHealthFill != null)
-        {
-            Debug.Log(current + " hp");
-            bossHealthFill.fillAmount = max > 0 ? Mathf.Clamp01((float)current / max) : 0f;
-        }
+            bossHealthFill.value = max > 0 ? Mathf.Clamp01((float)current / max) : 0f;
     }
 
     void HandleBossDefeated()

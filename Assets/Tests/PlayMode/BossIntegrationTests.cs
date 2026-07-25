@@ -6,8 +6,8 @@ using UnityEngine.TestTools;
 
 /// <summary>
 /// PlayMode tests for the Boss ship: BossMovement should roam the play area in various
-/// directions without leaving screen bounds, and a Boss (Enemy + Boss marker with huge
-/// health) should survive normal hits but still raise OnDestroyed once truly defeated.
+/// directions without leaving screen bounds, and a Boss (which extends Enemy directly, with
+/// huge health) should survive normal hits but still raise OnDestroyed once truly defeated.
 /// </summary>
 public class BossIntegrationTests
 {
@@ -95,18 +95,20 @@ public class BossIntegrationTests
     [UnityTest]
     public IEnumerator Boss_HasHugeHealth_SurvivesANormalHit()
     {
+        // Boss extends Enemy directly (no separate Enemy component) - adding both used to make
+        // GetComponent<Enemy>() ambiguous between two independent health pools, which was the
+        // actual cause of the boss health bar not tracking damage in real play.
         GameObject bossGO = CreatePlaceholder("TestBossEntity");
-        var enemy = bossGO.AddComponent<Enemy>();
-        enemy.health = 500; // huge HP compared to a regular enemy
-        enemy.hitEffect = CreatePlaceholder("HitFX");
-        enemy.destructionVFX = CreatePlaceholder("DestructionFX");
-        bossGO.AddComponent<Boss>();
+        var boss = bossGO.AddComponent<Boss>();
+        boss.health = 500; // huge HP compared to a regular enemy
+        boss.hitEffect = CreatePlaceholder("HitFX");
+        boss.destructionVFX = CreatePlaceholder("DestructionFX");
 
         yield return null;
 
-        enemy.GetDamage(50);
+        boss.GetDamage(50);
 
-        Assert.AreEqual(450, enemy.health);
+        Assert.AreEqual(450, boss.health);
         Assert.IsFalse(bossGO == null);
     }
 
@@ -114,21 +116,40 @@ public class BossIntegrationTests
     public IEnumerator Boss_WhenFinallyDefeated_RaisesOnDestroyedAndIsRemoved()
     {
         GameObject bossGO = CreatePlaceholder("TestBossEntity");
-        var enemy = bossGO.AddComponent<Enemy>();
-        enemy.health = 500;
-        enemy.hitEffect = CreatePlaceholder("HitFX");
-        enemy.destructionVFX = CreatePlaceholder("DestructionFX");
-        bossGO.AddComponent<Boss>();
+        var boss = bossGO.AddComponent<Boss>();
+        boss.health = 500;
+        boss.hitEffect = CreatePlaceholder("HitFX");
+        boss.destructionVFX = CreatePlaceholder("DestructionFX");
 
         yield return null;
 
         bool defeated = false;
-        enemy.OnDestroyed += () => defeated = true;
+        boss.OnDestroyed += () => defeated = true;
 
-        enemy.GetDamage(500);
+        boss.GetDamage(500);
         yield return null; // let Destroy() take effect
 
         Assert.IsTrue(defeated);
         Assert.IsTrue(bossGO == null);
+    }
+
+    [UnityTest]
+    public IEnumerator Boss_GetComponentEnemy_ResolvesToTheSameInstanceAsGetComponentBoss()
+    {
+        // Regression test for the actual reported bug: with Boss : Enemy, a GameObject must
+        // have exactly one Enemy-family component. If a separate Enemy component were ever
+        // added alongside Boss again, GetComponent<Enemy>() (used by the damage-dealing
+        // collision code) and GetComponent<Boss>() could resolve to two different instances,
+        // desyncing whichever one the HUD subscribed to from whichever one actually takes damage.
+        GameObject bossGO = CreatePlaceholder("TestBossEntity2");
+        var boss = bossGO.AddComponent<Boss>();
+        boss.health = 500;
+        boss.hitEffect = CreatePlaceholder("HitFX");
+        boss.destructionVFX = CreatePlaceholder("DestructionFX");
+
+        yield return null;
+
+        Assert.AreSame(boss, bossGO.GetComponent<Enemy>());
+        Assert.AreSame(boss, bossGO.GetComponent<Boss>());
     }
 }

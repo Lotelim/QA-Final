@@ -37,7 +37,7 @@ public class GameHUDTests
 
         hud.bossHealthBarRoot = TestSceneHelpers.CreatePlaceholder(spawned, "BossBarRoot");
         GameObject fillGO = TestSceneHelpers.CreatePlaceholder(spawned, "BossBarFill");
-        hud.bossHealthFill = fillGO.AddComponent<Image>();
+        hud.bossHealthFill = fillGO.AddComponent<Slider>();
 
         hud.winScreenRoot = TestSceneHelpers.CreatePlaceholder(spawned, "WinScreen");
         hud.loseScreenRoot = TestSceneHelpers.CreatePlaceholder(spawned, "LoseScreen");
@@ -96,7 +96,7 @@ public class GameHUDTests
     {
         CreatePlayer();
         GameObject bossPrefab = TestSceneHelpers.CreatePlaceholder(spawned, "TestBossPrefabForHud");
-        var bossEnemy = bossPrefab.AddComponent<Enemy>();
+        var bossEnemy = bossPrefab.AddComponent<Boss>(); // matches the real Boss prefab: Boss extends Enemy directly
         bossEnemy.health = 100;
         bossEnemy.hitEffect = TestSceneHelpers.CreatePlaceholder(spawned, "HitFX");
         bossEnemy.destructionVFX = TestSceneHelpers.CreatePlaceholder(spawned, "DestructionFX");
@@ -110,7 +110,7 @@ public class GameHUDTests
         yield return new WaitForSeconds(0.15f); // let the boss actually spawn
 
         Assert.IsTrue(hud.bossHealthBarRoot.activeSelf, "health bar should show once the boss spawns");
-        Assert.AreEqual(1f, hud.bossHealthFill.fillAmount, 0.001f, "should start full");
+        Assert.AreEqual(1f, hud.bossHealthFill.value, 0.001f, "should start full");
 
         Enemy spawnedBoss = null;
         foreach (Enemy e in Object.FindObjectsByType<Enemy>(FindObjectsSortMode.None))
@@ -119,7 +119,7 @@ public class GameHUDTests
         Assert.IsNotNull(spawnedBoss);
 
         spawnedBoss.GetDamage(50);
-        Assert.AreEqual(0.5f, hud.bossHealthFill.fillAmount, 0.001f, "fill should track remaining health");
+        Assert.AreEqual(0.5f, hud.bossHealthFill.value, 0.001f, "fill should track remaining health");
 
         spawnedBoss.GetDamage(50);
         yield return null; // let Destroy() (and OnDestroyed) take effect

@@ -97,7 +97,7 @@ public class LevelControllerBossTests
     {
         CreatePlayer();
         GameObject bossPrefab = TestSceneHelpers.CreatePlaceholder(spawned, "TestBossPrefab");
-        var enemyOnPrefab = bossPrefab.AddComponent<Enemy>();
+        var enemyOnPrefab = bossPrefab.AddComponent<Boss>(); // matches the real Boss prefab: Boss extends Enemy directly
         enemyOnPrefab.hitEffect = TestSceneHelpers.CreatePlaceholder(spawned, "HitFX");
         enemyOnPrefab.destructionVFX = TestSceneHelpers.CreatePlaceholder(spawned, "DestructionFX");
         LevelController controller = CreateLevelController(bossPrefab, bossSpawnDelay: 0.05f);
